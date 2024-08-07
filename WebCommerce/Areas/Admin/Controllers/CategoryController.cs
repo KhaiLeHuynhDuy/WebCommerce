@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebCommerce.Models;
-using WebCommerce.Repository;
+
 using WebCommerce.Repository.IRepository;
 
 namespace WebCommerce.Areas.Admin.Controllers

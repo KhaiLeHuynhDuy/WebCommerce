@@ -9,7 +9,7 @@ namespace WebCommerce.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryId { get; set; }
         [Required]
-        public string? Name { get; set; }
+        public string? CategoryName { get; set; }
         [Range(0, 5)]
         public int DisplayOrder { get; set; }
 

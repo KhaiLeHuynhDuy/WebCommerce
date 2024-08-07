@@ -13,7 +13,7 @@ namespace WebCommerce.Models
         [Required]
         public string? Description { get; set; }
         
-        public int? CategoryID { get; set; }
+        public string? CategoryName { get; set; }
         [Required]
         public double? ProductPrice { get; set; }
 
