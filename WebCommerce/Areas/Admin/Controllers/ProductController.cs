@@ -35,6 +35,42 @@ namespace WebCommerce.Areas.Admin.Controllers
             _productRepository.Save();
             return RedirectToAction("Index");
         }
-
+        public IActionResult Edit(int? id)
+        {
+            if (id == null|| id == 0)
+            {
+                return NotFound();
+            }
+            Product product = _productRepository.Get(u=>u.ProductID == id);
+            return View(product);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Product product)
+        {
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+            _productRepository.Update(product);
+            _productRepository.Save();
+            return RedirectToAction("Index");
+        }
+        public IActionResult Delete(int? id)
+        {
+            if (id == 0 || id == null)
+            {
+                return NotFound();
+            }
+            Product product = _productRepository.Get(u => u.ProductID == id);
+            return View(product);
+        }
+        [HttpPost, ActionName("Delete")]
+        public IActionResult ConfirmDelete(Product product)
+        {
+            _productRepository.Delete(product);
+            _productRepository.Save();
+            return RedirectToAction("Index");
+        }
     }
 }
