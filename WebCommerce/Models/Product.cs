@@ -23,5 +23,6 @@ namespace WebCommerce.Models
 
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
+        public string ImageURL { get; set; }
     }
 }

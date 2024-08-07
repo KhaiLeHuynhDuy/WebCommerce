@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebCommerce.Models;
 
 using WebCommerce.Repository.IRepository;
@@ -17,6 +18,7 @@ namespace WebCommerce.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Category> categories = _categoryRepository.GetAll().ToList();
+           
             return View(categories);
         }
         public IActionResult Create()
