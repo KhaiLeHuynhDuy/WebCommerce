@@ -127,5 +127,9 @@ namespace WebCommerce.Areas.Admin.Controllers
             _productRepository.Save();
             return RedirectToAction("Index");
         }
+        public IActionResult Upload()
+        {
+           return View();
+        }
     }
 }
