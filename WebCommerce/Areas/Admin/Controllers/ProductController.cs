@@ -39,13 +39,6 @@ namespace WebCommerce.Areas.Admin.Controllers
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
             string productPath = Path.Combine(wwwRootPath, @"img\product");
-
-            // Ensure directory exists
-            if (!Directory.Exists(productPath))
-            {
-                Directory.CreateDirectory(productPath);
-            }
-
             string filePath = Path.Combine(productPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
@@ -53,7 +46,7 @@ namespace WebCommerce.Areas.Admin.Controllers
             }
 
             // Return the relative path to the image
-            return Path.Combine(@"img\product\"+fileName);
+            return Path.Combine(@"\img\product\" + fileName);
         }
 
 
@@ -85,8 +78,6 @@ namespace WebCommerce.Areas.Admin.Controllers
                 _productRepository.Save();
                 return RedirectToAction("Index");
             }
-
-            // Cập nhật lại danh sách danh mục nếu model không hợp lệ
             model.CategoryList = _categoryRepository.GetAll().Select(u => new SelectListItem
             {
                 Text = u.CategoryName,
@@ -151,7 +142,6 @@ namespace WebCommerce.Areas.Admin.Controllers
 
                 return RedirectToAction("Index");
             }
-
             // Nếu ModelState không hợp lệ, tải lại danh sách danh mục
             model.CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
             {

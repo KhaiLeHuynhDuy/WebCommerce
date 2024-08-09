@@ -12,46 +12,55 @@
     <title>Index</title>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-   
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.ProductName)</th>
-                <th>@Html.DisplayNameFor(model => model.Description)</th>
-                <th>@Html.DisplayNameFor(model => model.ProductPrice)</th>
-                <th>@Html.DisplayNameFor(model => model.Category)</th>
-                <th>@Html.DisplayNameFor(model => model.ImageURL)</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="container">
+        <h1>Product List</h1>
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>
-                    @* <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td> *@
-                    <td>@Html.DisplayFor(modelItem => item.ImageURL)</td>
-                    <td>
-                        <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@item.ProductID">Edit</a> |
-                        <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@item.ProductID">Details</a> |
-                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.ProductID">Delete</a>
-                    </td>
-
+                    <th>@Html.DisplayNameFor(model => model.First().ProductName)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Description)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().ProductPrice)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Category.CategoryName)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().ImageURL)</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-     <p>
-        <a class="btn btn-primary" asp-action="Create">Create New</a>
-    </p>
-    <a asp-area="Customer"  asp-controller="Home" asp-action="Index">Back to List</a>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImageURL))
+                            {
+                                <img src="@item.ImageURL" alt="Product Image" style="max-width: 100px; max-height: 100px;" />
+                            }
+                            else
+                            {
+                                <p>No image</p>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-info btn-sm" asp-action="Edit" asp-route-id="@item.ProductID">Edit</a> |
+                            <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@item.ProductID">Details</a> |
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.ProductID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p>
+            <a class="btn btn-primary" asp-action="Create">Create New</a>
+        </p>
+        <a class="btn btn-secondary" asp-area="Customer" asp-controller="Home" asp-action="Index">Back to List</a>
+    </div>
+
     <!-- Bootstrap core JS-->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

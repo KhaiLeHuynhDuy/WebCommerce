@@ -1,7 +1,6 @@
 ﻿@model WebCommerce.Models.ViewModels.ProductViewModel
 
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -15,10 +14,9 @@
         <div class="col-md-4">
             <form asp-action="Edit" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <<div class="form-group">
+                <div class="form-group">
                     <input asp-for="Product.ProductID" type="hidden" />
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Product.ProductName" class="control-label"></label>
                     <input asp-for="Product.ProductName" class="form-control" />
@@ -36,16 +34,21 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Product.CategoryId" class="control-label"></label>
-                    <select asp-for="@Model.Product.CategoryId" class="form-control" asp-items="@Model.CategoryList"></select>
+                    <select asp-for="Product.CategoryId" class="form-control" asp-items="@Model.CategoryList"></select>
                 </div>
                 <div class="form-group">
                     <label asp-for="Product.ImageURL" class="control-label"></label>
                     <input type="file" name="file" class="form-control" />
                     <span asp-validation-for="Product.ImageURL" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <img src="@Url.Content(Model.Product.ImageURL)" alt="Product Image" style="max-width: 300px; max-height: 300px;" />
-                </div>
+                @if (!string.IsNullOrEmpty(Model.Product.ImageURL))
+                {
+                    <img src="@Model.Product.ImageURL" />                   
+                }
+                else
+                {
+                    <p>No image available</p>
+                }
 
                 <div class="form-group">
                     <input type="submit" value="Edit" class="btn btn-primary" />
