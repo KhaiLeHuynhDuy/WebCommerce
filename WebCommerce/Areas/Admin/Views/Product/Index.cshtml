@@ -43,6 +43,7 @@
                         <a class="btn btn-secondary btn-sm" asp-action="Details" asp-route-id="@item.ProductID">Details</a> |
                         <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.ProductID">Delete</a>
                     </td>
+
                 </tr>
             }
         </tbody>
@@ -50,6 +51,7 @@
      <p>
         <a class="btn btn-primary" asp-action="Create">Create New</a>
     </p>
+    <a asp-action="Index">Back to List</a>
     <!-- Bootstrap core JS-->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

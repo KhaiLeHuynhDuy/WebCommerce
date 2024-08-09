@@ -23,8 +23,9 @@ namespace WebCommerce.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            return View(new Category()); // Ensure a new Category object is passed
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)

@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebCommerce.Models
 {
@@ -13,6 +15,7 @@ namespace WebCommerce.Models
         public string ProductName { get; set; }
 
         [Required]
+        [AllowNull]
         public string Description { get; set; }
 
         [Required]
@@ -22,7 +25,9 @@ namespace WebCommerce.Models
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
+        [AllowNull]
+        [ValidateNever]
         public string ImageURL { get; set; }
     }
 }

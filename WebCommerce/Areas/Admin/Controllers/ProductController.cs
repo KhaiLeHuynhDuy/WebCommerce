@@ -29,105 +29,122 @@ namespace WebCommerce.Areas.Admin.Controllers
             List<Product> products = _productRepository.GetAll().ToList();
             return View(products);
         }
+        public string UploadImage(IFormFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "File không được null");
+            }
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            string productPath = Path.Combine(wwwRootPath, @"img\product");
+
+            // Ensure directory exists
+            if (!Directory.Exists(productPath))
+            {
+                Directory.CreateDirectory(productPath);
+            }
+
+            string filePath = Path.Combine(productPath, fileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(fileStream);
+            }
+
+            // Return the relative path to the image
+            return Path.Combine(@"img\product", fileName);
+        }
+
 
         public IActionResult Create()
         {
-            ProductViewModel model = new ProductViewModel
+            ProductViewModel model = new()
             {
-                Product = new Product(),
-                CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
+                CategoryList = _categoryRepository.GetAll().Select(u => new SelectListItem
                 {
-                    Text = c.CategoryName,
-                    Value = c.CategoryId.ToString()
-                }).ToList()
+                    Text = u.CategoryName,
+                    Value = u.CategoryId.ToString()
+                }),
+                Product = new Product()
             };
             return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(ProductViewModel model, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                if (file != null && file.Length > 0)
                 {
-                    string fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                    string extension = Path.GetExtension(file.FileName);
-                    model.Product.ImageURL = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath + "/images/", fileName);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
+                    model.Product.ImageURL = UploadImage(file);
                 }
 
                 _productRepository.Add(model.Product);
                 _productRepository.Save();
                 return RedirectToAction("Index");
             }
-            model.CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
+
+            // Cập nhật lại danh sách danh mục nếu model không hợp lệ
+            model.CategoryList = _categoryRepository.GetAll().Select(u => new SelectListItem
             {
-                Text = c.CategoryName,
-                Value = c.CategoryId.ToString()
+                Text = u.CategoryName,
+                Value = u.CategoryId.ToString()
             }).ToList();
+
             return View(model);
         }
 
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            Product product = _productRepository.Get(u => u.ProductID == id);
+            // Lấy thông tin sản phẩm từ cơ sở dữ liệu
+            var product = _productRepository.Get(u => u.ProductID == id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            ProductViewModel model = new ProductViewModel
-            {
-                Product = product,
-                CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
-                {
-                    Text = c.CategoryName,
-                    Value = c.CategoryId.ToString()
-                }).ToList()
-            };
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(ProductViewModel model, IFormFile? file)
-        {
-            if (ModelState.IsValid)
-            {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                    string extension = Path.GetExtension(file.FileName);
-                    model.Product.ImageURL = fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
-                    string path = Path.Combine(wwwRootPath + "/images/", fileName);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                }
-
-                _productRepository.Update(model.Product);
-                _productRepository.Save();
-                return RedirectToAction("Index");
-            }
-            model.CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
+            // Lấy danh sách các danh mục và chuẩn bị cho View
+            var categories = _categoryRepository.GetAll().Select(c => new SelectListItem
             {
                 Text = c.CategoryName,
                 Value = c.CategoryId.ToString()
             }).ToList();
+
+            // Khởi tạo ProductViewModel với sản phẩm và danh sách danh mục
+            var model = new ProductViewModel
+            {
+                Product = product,
+                CategoryList = categories
+            };
+
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(ProductViewModel productViewModel, IFormFile? file)
+        {
+            if (ModelState.IsValid)
+            {
+                if (file != null && file.Length > 0)
+                {
+                    productViewModel.Product.ImageURL = UploadImage(file);
+                }
+
+                _productRepository.Update(productViewModel.Product);
+                _productRepository.Save();
+                return RedirectToAction("Index");
+            }
+
+            // Nếu ModelState không hợp lệ, cập nhật lại danh sách các danh mục cho View
+            productViewModel.CategoryList = _categoryRepository.GetAll().Select(u => new SelectListItem
+            {
+                Text = u.CategoryName,
+                Value = u.CategoryId.ToString()
+            }).ToList();
+
+            return View(productViewModel);
         }
 
         public IActionResult Delete(int? id)
@@ -136,11 +153,13 @@ namespace WebCommerce.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             Product product = _productRepository.Get(u => u.ProductID == id);
             if (product == null)
             {
                 return NotFound();
             }
+
             return View(product);
         }
 
@@ -153,14 +172,10 @@ namespace WebCommerce.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             _productRepository.Delete(product);
             _productRepository.Save();
             return RedirectToAction("Index");
-        }
-
-        public IActionResult Upload()
-        {
-            return View();
         }
     }
 }
