@@ -53,7 +53,7 @@ namespace WebCommerce.Areas.Admin.Controllers
             }
 
             // Return the relative path to the image
-            return Path.Combine(@"img\product", fileName);
+            return Path.Combine(@"img\product\"+fileName);
         }
 
 
@@ -72,7 +72,7 @@ namespace WebCommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(ProductViewModel model, IFormFile? file)
+        public IActionResult Create(ProductViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -123,28 +123,43 @@ namespace WebCommerce.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(ProductViewModel productViewModel, IFormFile? file)
+        public IActionResult Edit(ProductViewModel model, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                if (file != null && file.Length > 0)
+                // Lấy đối tượng Product gốc từ cơ sở dữ liệu
+                var productFromDb = _productRepository.Get(u => u.ProductID == model.Product.ProductID);
+                if (productFromDb == null)
                 {
-                    productViewModel.Product.ImageURL = UploadImage(file);
+                    return NotFound();
                 }
 
-                _productRepository.Update(productViewModel.Product);
+                // Nếu có ảnh mới, tải lên và cập nhật URL ảnh
+                if (file != null)
+                {
+                    productFromDb.ImageURL = UploadImage(file);
+                }
+                // Cập nhật các thuộc tính từ ViewModel vào Product gốc
+                productFromDb.ProductName = model.Product.ProductName;
+                productFromDb.Description = model.Product.Description;
+                productFromDb.ProductPrice = model.Product.ProductPrice;
+                productFromDb.CategoryId = model.Product.CategoryId;
+
+                // Cập nhật sản phẩm trong cơ sở dữ liệu
+                _productRepository.Update(productFromDb);
                 _productRepository.Save();
+
                 return RedirectToAction("Index");
             }
 
-            // Nếu ModelState không hợp lệ, cập nhật lại danh sách các danh mục cho View
-            productViewModel.CategoryList = _categoryRepository.GetAll().Select(u => new SelectListItem
+            // Nếu ModelState không hợp lệ, tải lại danh sách danh mục
+            model.CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
             {
-                Text = u.CategoryName,
-                Value = u.CategoryId.ToString()
+                Text = c.CategoryName,
+                Value = c.CategoryId.ToString()
             }).ToList();
 
-            return View(productViewModel);
+            return View(model);
         }
 
         public IActionResult Delete(int? id)

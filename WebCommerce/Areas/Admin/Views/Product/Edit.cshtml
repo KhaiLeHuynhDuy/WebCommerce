@@ -1,62 +1,67 @@
 ﻿@model WebCommerce.Models.ViewModels.ProductViewModel
 
-@{
-    ViewData["Title"] = "Edit";
-}
+<!DOCTYPE html>
 
-<h1>Edit</h1>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Edit</title>
+</head>
+<body>
 
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Product.ProductName" class="control-label"></label>
-                <input asp-for="Product.ProductName" class="form-control" />
-                <span asp-validation-for="Product.ProductName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Product.Description" class="control-label"></label>
-                <textarea asp-for="Product.Description" class="form-control"></textarea>
-                <span asp-validation-for="Product.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Product.ProductPrice" class="control-label"></label>
-                <input asp-for="Product.ProductPrice" class="form-control" />
-                <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Product.CategoryId" class="control-label"></label>
-                <select asp-for="Product.CategoryId" class="form-control" asp-items="Model.CategoryList"></select>
-                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                @if (!string.IsNullOrEmpty(Model.Product.ImageURL))
-                {
+    <h4>Product</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <<div class="form-group">
+                    <input asp-for="Product.ProductID" type="hidden" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Product.ProductName" class="control-label"></label>
+                    <input asp-for="Product.ProductName" class="form-control" />
+                    <span asp-validation-for="Product.ProductName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.Description" class="control-label"></label>
+                    <input asp-for="Product.Description" class="form-control" />
+                    <span asp-validation-for="Product.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.ProductPrice" class="control-label"></label>
+                    <input asp-for="Product.ProductPrice" class="form-control" />
+                    <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.CategoryId" class="control-label"></label>
+                    <select asp-for="@Model.Product.CategoryId" class="form-control" asp-items="@Model.CategoryList"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Product.ImageURL" class="control-label"></label>
+                    <input type="file" name="file" class="form-control" />
+                    <span asp-validation-for="Product.ImageURL" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <img src="@Url.Content(Model.Product.ImageURL)" alt="Product Image" style="max-width: 300px; max-height: 300px;" />
-                }
-            </div>
-            <p>Image URL: @Model.Product.ImageURL</p>
+                </div>
 
-            <div class="form-group">
-                <label for="file">Upload Image:</label>
-                <input type="file" name="file" class="form-control" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Edit" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="form-group">
+                    <input type="submit" value="Edit" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
     }
-}
+</body>
+</html>
