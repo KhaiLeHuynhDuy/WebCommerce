@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,8 +27,19 @@ namespace WebCommerce.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = _productRepository.GetAll().ToList();
-            return View(products);
+            var products = _productRepository.GetAll().ToList();
+
+            var productViewModels = products.Select(p => new ProductViewModel
+            {
+                Product = p,
+                CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.CategoryName
+                }).ToList()
+            }).ToList();
+
+            return View(productViewModels);
         }
         public string UploadImage(IFormFile file)
         {
@@ -46,7 +58,7 @@ namespace WebCommerce.Areas.Admin.Controllers
             }
 
             // Return the relative path to the image
-            return Path.Combine(@"\img\product\" + fileName);
+            return Path.Combine(@"\img\product\"+fileName);
         }
 
 
