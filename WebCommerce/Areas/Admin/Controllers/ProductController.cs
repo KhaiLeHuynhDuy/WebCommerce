@@ -38,6 +38,7 @@ namespace WebCommerce.Areas.Admin.Controllers
                     Text = c.CategoryName
                 }).ToList()
             }).ToList();
+           
 
             return View(productViewModels);
         }
@@ -56,9 +57,7 @@ namespace WebCommerce.Areas.Admin.Controllers
             {
                 file.CopyTo(fileStream);
             }
-
-            // Return the relative path to the image
-            return Path.Combine(@"\img\product\"+fileName);
+            return Path.Combine(@"\img\product\" + fileName);
         }
 
 
@@ -75,7 +74,6 @@ namespace WebCommerce.Areas.Admin.Controllers
             };
             return View(model);
         }
-
         [HttpPost]
         public IActionResult Create(ProductViewModel model, IFormFile file)
         {
@@ -85,7 +83,6 @@ namespace WebCommerce.Areas.Admin.Controllers
                 {
                     model.Product.ImageURL = UploadImage(file);
                 }
-
                 _productRepository.Add(model.Product);
                 _productRepository.Save();
                 return RedirectToAction("Index");
@@ -95,27 +92,22 @@ namespace WebCommerce.Areas.Admin.Controllers
                 Text = u.CategoryName,
                 Value = u.CategoryId.ToString()
             }).ToList();
-
             return View(model);
         }
-
         public IActionResult Edit(int id)
         {
-            // Lấy thông tin sản phẩm từ cơ sở dữ liệu
             var product = _productRepository.Get(u => u.ProductID == id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            // Lấy danh sách các danh mục và chuẩn bị cho View
             var categories = _categoryRepository.GetAll().Select(c => new SelectListItem
             {
                 Text = c.CategoryName,
                 Value = c.CategoryId.ToString()
             }).ToList();
 
-            // Khởi tạo ProductViewModel với sản phẩm và danh sách danh mục
             var model = new ProductViewModel
             {
                 Product = product,
@@ -130,31 +122,36 @@ namespace WebCommerce.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Lấy đối tượng Product gốc từ cơ sở dữ liệu
                 var productFromDb = _productRepository.Get(u => u.ProductID == model.Product.ProductID);
                 if (productFromDb == null)
                 {
                     return NotFound();
                 }
 
-                // Nếu có ảnh mới, tải lên và cập nhật URL ảnh
                 if (file != null)
                 {
+                    // Delete the old image if it exists
+                    if (!string.IsNullOrEmpty(productFromDb.ImageURL))
+                    {
+                        DeleteOldImage(productFromDb.ImageURL);
+                    }
+
+                    // Upload the new image and update the URL
                     productFromDb.ImageURL = UploadImage(file);
                 }
-                // Cập nhật các thuộc tính từ ViewModel vào Product gốc
+
+                // Update other product details
                 productFromDb.ProductName = model.Product.ProductName;
                 productFromDb.Description = model.Product.Description;
                 productFromDb.ProductPrice = model.Product.ProductPrice;
                 productFromDb.CategoryId = model.Product.CategoryId;
 
-                // Cập nhật sản phẩm trong cơ sở dữ liệu
                 _productRepository.Update(productFromDb);
                 _productRepository.Save();
 
                 return RedirectToAction("Index");
             }
-            // Nếu ModelState không hợp lệ, tải lại danh sách danh mục
+
             model.CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
             {
                 Text = c.CategoryName,
@@ -164,22 +161,34 @@ namespace WebCommerce.Areas.Admin.Controllers
             return View(model);
         }
 
+        public void DeleteOldImage(string imagePath)
+        {
+            if (string.IsNullOrEmpty(imagePath))
+            {
+                throw new ArgumentException("Image path cannot be null or empty", nameof(imagePath));
+            }
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string filePath = Path.Combine(wwwRootPath, imagePath.TrimStart('\\'));
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
             {
                 return NotFound();
             }
-
             Product product = _productRepository.Get(u => u.ProductID == id);
             if (product == null)
             {
                 return NotFound();
             }
-
             return View(product);
         }
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult ConfirmDelete(int id)
@@ -189,10 +198,27 @@ namespace WebCommerce.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
             _productRepository.Delete(product);
             _productRepository.Save();
             return RedirectToAction("Index");
+        }
+        #region Apis call
+        [HttpGet]
+        public IActionResult GetAllFromAPI()
+        {
+            var products = _productRepository.GetAll().ToList();
+
+            var productViewModels = products.Select(p => new ProductViewModel
+            {
+                Product = p,
+                CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
+                {
+                    Value = c.CategoryId.ToString(),
+                    Text = c.CategoryName
+                }).ToList()
+            }).ToList();
+            return Json(productViewModels);
+            #endregion
         }
     }
 }
