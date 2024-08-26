@@ -19,11 +19,11 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>@Html.DisplayNameFor(model => model.First().Product.ProductName)</th>
-                    <th>@Html.DisplayNameFor(model => model.First().Product.Description)</th>
-                    <th>@Html.DisplayNameFor(model => model.First().Product.ProductPrice)</th>
-                    <th>@Html.DisplayNameFor(model => model.First().Product.Category.CategoryName)</th>
-                    <th>@Html.DisplayNameFor(model => model.First().Product.ImageURL)</th>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Product Price</th>
+                    <th>Category Name</th>
+                    <th>Image URL</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -31,10 +31,10 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => item.Product.ProductName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Product.Description)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Product.ProductPrice)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Product.Category.CategoryName)</td>
+                        <td>@item.Product.ProductName</td>
+                        <td>@item.Product.Description</td>
+                        <td>@item.Product.ProductPrice</td>
+                        <td>@item.Product.Category.CategoryName</td>
                         <td>
                             @if (!string.IsNullOrEmpty(item.Product.ImageURL))
                             {

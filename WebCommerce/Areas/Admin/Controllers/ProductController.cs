@@ -38,7 +38,7 @@ namespace WebCommerce.Areas.Admin.Controllers
                     Text = c.CategoryName
                 }).ToList()
             }).ToList();
-           
+
 
             return View(productViewModels);
         }
@@ -202,23 +202,7 @@ namespace WebCommerce.Areas.Admin.Controllers
             _productRepository.Save();
             return RedirectToAction("Index");
         }
-        #region Apis call
-        [HttpGet]
-        public IActionResult GetAllFromAPI()
-        {
-            var products = _productRepository.GetAll().ToList();
-
-            var productViewModels = products.Select(p => new ProductViewModel
-            {
-                Product = p,
-                CategoryList = _categoryRepository.GetAll().Select(c => new SelectListItem
-                {
-                    Value = c.CategoryId.ToString(),
-                    Text = c.CategoryName
-                }).ToList()
-            }).ToList();
-            return Json(productViewModels);
-            #endregion
-        }
+       
+        
     }
 }

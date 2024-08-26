@@ -12,7 +12,7 @@ namespace WebCommerce.Models
         public int ProductID { get; set; }
 
         [Required]
-        public string ProductName { get; set; }
+        public string? ProductName { get; set; }
 
         [Required]
         [AllowNull]

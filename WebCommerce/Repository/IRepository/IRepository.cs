@@ -9,6 +9,6 @@ namespace WebCommerce.Repository.IRepository
         public void Add(T entity);
         public void Update(T entity);
         public void Delete(T entity);
-        public void DeleteAll(IEnumerable<T>entity);
+        public void DeleteAll(IEnumerable<T> entity);
     }
 }

@@ -32,13 +32,13 @@ namespace WebCommerce.Repository
         public T Get(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
         {
             IQueryable<T> values = dbSet;
-            values= values.Where(predicate);
+            values = values.Where(predicate);
             return values.FirstOrDefault();
         }
 
         public IEnumerable<T> GetAll()
         {
-            IQueryable<T> values= dbSet;
+            IQueryable<T> values = dbSet;
             return values.ToList();
         }
 
